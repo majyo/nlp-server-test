@@ -8,8 +8,11 @@ class BaseHandler(tornado.web.RequestHandler):
     def set_default_headers(self):
         self.set_header('Access-Control-Allow-Origin', '*')
         self.set_header('Access-Control-Allow-Headers', '*')
-        self.set_header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
+        self.set_header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS')
         # self.set_header('Access-Control-Max-Age', 1000)
+
+    def options(self):
+        pass
 
 
 class MainHandler(BaseHandler):
@@ -42,6 +45,7 @@ class NerHandler(BaseHandler):
             self.write(result)
             self.flush()
             self.finish()
+
 
     def handle_ner(self) -> str:
         args_dict: dict = json.loads(self.json_args)
