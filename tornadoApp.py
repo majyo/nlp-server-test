@@ -46,7 +46,6 @@ class NerHandler(BaseHandler):
             self.flush()
             self.finish()
 
-
     def handle_ner(self) -> str:
         args_dict: dict = json.loads(self.json_args)
         simple_mode: bool = False if args_dict["mode"] == "full" else True
