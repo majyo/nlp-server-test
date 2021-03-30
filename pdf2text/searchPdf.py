@@ -28,6 +28,8 @@ class PdfSearcher:
         handle_errpr(host, port, path)
         self.url = "http://%s:%s/%s" % (host, port, path)
         self.articles = []
+        self.connection = None
+        self.DEFAULT_SMB = "192.168.40.10"
 
     def fetch(self, title: str, limit: int) -> None:
         query_path = urllib.parse.urlencode({"title": title, "limit": limit})
@@ -37,6 +39,11 @@ class PdfSearcher:
             data = f.read().decode("utf-8")
             json_list: list = json.loads(data)["ArticleList"]
             self.articles = [Article(article) for article in json_list]
+
+    def connect_to_smb(self, host, port=445, username="", password=""):
+        self.connection = SMBConnection(username, password, "", "", use_ntlm_v2=True)
+        result = self.connection.connect(host, port)
+        logging.info(result)
 
     def get_pdf(self):
         pass
