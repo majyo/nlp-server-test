@@ -8,6 +8,7 @@ import json
 import logging
 
 from typing import Dict
+from typing import Tuple
 
 from pdf2text.Article import Article
 
@@ -45,8 +46,24 @@ class PdfSearcher:
         result = self.connection.connect(host, port)
         logging.info(result)
 
-    def get_pdf(self):
-        pass
+    def get_pdfs(self):
+        if not self.connection:
+            self.connect_to_smb(self.DEFAULT_SMB)
+
+        for i, article in enumerate(self.articles):
+            share_path = self._get_path(article.smb)
+            print(share_path)
+            localfile_path = "../pdfcache/%s.pdf" % i
+            localfile = open(localfile_path, "wb")
+            self.connection.retrieveFile(share_path[0], share_path[1], localfile)
+            logging.info("download file succeed.")
+
+    def _get_path(self, smb: str) -> Tuple[str, str]:
+        smb_list: list = smb.split("/")
+        share_dir: str = smb_list[3]
+        share_file: str = smb_list[4]
+        share_file = urllib.parse.unquote(share_file)
+        return share_dir, share_file
 
 
 if __name__ == "__main__":
@@ -55,3 +72,5 @@ if __name__ == "__main__":
     for article in searcher.articles:
         print(article.dump())
     searcher.connect_to_smb(searcher.DEFAULT_SMB)
+    searcher.get_pdfs()
+    # searcher._get_path(searcher.articles[0].smb)
