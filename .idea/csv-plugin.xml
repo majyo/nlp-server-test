@@ -10,6 +10,20 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/pdf2text/searchPdf.py">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/testServer/virtualPdfServer.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/tornadoApp.py">
           <value>
             <Attribute>
