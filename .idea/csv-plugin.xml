@@ -10,6 +10,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/pdf2text/Article.py">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/pdf2text/searchPdf.py">
           <value>
             <Attribute>

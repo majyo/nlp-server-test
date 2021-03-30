@@ -3,8 +3,15 @@ import urllib.parse
 import urllib.request
 import re
 import IPy
+import json
+
+import logging
 
 from typing import Dict
+
+from pdf2text.Article import Article
+
+logging.basicConfig(level=logging.INFO)
 
 
 class PdfSearcher:
@@ -19,17 +26,24 @@ class PdfSearcher:
                 raise ValueError("Invalid port formation %s." % port)
 
         handle_errpr(host, port, path)
-        self.url = "%s:%s/%s" % (host, port, path)
+        self.url = "http://%s:%s/%s" % (host, port, path)
+        self.articles = []
 
-    def fetch(self, title: str, limit: int):
+    def fetch(self, title: str, limit: int) -> None:
         query_path = urllib.parse.urlencode({"title": title, "limit": limit})
         query_url = "%s?%s" % (self.url, query_path)
-        # print(query_url)
+        logging.info("open URL: %s" % query_url)
+        with urllib.request.urlopen(query_url) as f:
+            data = f.read().decode("utf-8")
+            json_list: list = json.loads(data)["ArticleList"]
+            self.articles = [Article(article) for article in json_list]
+
+    def get_pdf(self):
+        pass
 
 
 if __name__ == "__main__":
-    searcher = PdfSearcher("192.168.40.10", "8001", "searchpdf")
+    searcher = PdfSearcher("127.0.0.1", "7001", "searchpdf")
     searcher.fetch("The properties of graphene", 2)
-    with urllib.request.urlopen("192.168.40.10:8001/searchpdf?title=The+properties+of+graphene&limit=2") as f:
-        data = f.read().decode("utf-8")
-        print(data)
+    for article in searcher.articles:
+        print(article.dump())
