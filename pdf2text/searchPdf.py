@@ -50,7 +50,8 @@ class PdfSearcher:
 
 
 if __name__ == "__main__":
-    searcher = PdfSearcher("127.0.0.1", "7001", "searchpdf")
+    searcher = PdfSearcher("192.168.40.10", "8001", "searchpdf")
     searcher.fetch("The properties of graphene", 2)
     for article in searcher.articles:
         print(article.dump())
+    searcher.connect_to_smb(searcher.DEFAULT_SMB)
