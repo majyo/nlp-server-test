@@ -10,7 +10,7 @@ import logging
 from typing import Dict
 from typing import Tuple
 
-from pdf2text.Article import Article
+from pdf2text.article import Article
 
 logging.basicConfig(level=logging.INFO)
 
@@ -39,7 +39,7 @@ class PdfSearcher:
         with urllib.request.urlopen(query_url) as f:
             data = f.read().decode("utf-8")
             json_list: list = json.loads(data)["ArticleList"]
-            self.articles = [Article(article) for article in json_list]
+            self.articles = [(i, Article(article)) for i, article in enumerate(json_list)]
 
     def connect_to_smb(self, host, port=445, username="", password=""):
         self.connection = SMBConnection(username, password, "", "", use_ntlm_v2=True)
@@ -50,7 +50,7 @@ class PdfSearcher:
         if not self.connection:
             self.connect_to_smb(self.DEFAULT_SMB)
 
-        for i, article in enumerate(self.articles):
+        for i, article in self.articles:
             share_path = self._get_path(article.smb)
             print(share_path)
             localfile_path = "../pdfcache/%s.pdf" % i
@@ -66,11 +66,40 @@ class PdfSearcher:
         return share_dir, share_file
 
 
+class PdfDownloader:
+    def __init__(self):
+        self.connection = None
+        self.DEFAULT_SMB = "192.168.40.10"
+
+    def connect_to_smb(self, host, port=445, username="", password=""):
+        self.connection = SMBConnection(username, password, "", "", use_ntlm_v2=True)
+        result = self.connection.connect(host, port)
+        logging.info(result)
+
+    def get_pdf(self, smb: str, work_dir: str):
+        if not self.connection:
+            self.connect_to_smb(self.DEFAULT_SMB)
+
+        share_path = self._get_path(smb)
+        logging.debug(share_path)
+        localfile_path = "../%s/pdfcache/%s.pdf" % (work_dir, i)
+        localfile = open(localfile_path, "wb")
+        self.connection.retrieveFile(share_path[0], share_path[1], localfile)
+        logging.info("download pdf file succeed.")
+
+    def _get_path(self, smb: str) -> Tuple[str, str]:
+        smb_list: list = smb.split("/")
+        share_dir: str = smb_list[3]
+        share_file: str = smb_list[4]
+        share_file = urllib.parse.unquote(share_file)
+        return share_dir, share_file
+
+
 if __name__ == "__main__":
-    searcher = PdfSearcher("192.168.40.10", "8001", "searchpdf")
+    searcher = PdfSearcher("127.0.0.1", "7001", "searchpdf")
     searcher.fetch("The properties of graphene", 2)
-    for article in searcher.articles:
+    for i, article in searcher.articles:
         print(article.dump())
-    searcher.connect_to_smb(searcher.DEFAULT_SMB)
-    searcher.get_pdfs()
+    # searcher.connect_to_smb(searcher.DEFAULT_SMB)
+    # searcher.get_pdfs()
     # searcher._get_path(searcher.articles[0].smb)

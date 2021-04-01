@@ -38,6 +38,9 @@ class Article:
     def dump(self):
         return json.dumps(self.__dict__)
 
+    def toDict(self):
+        return self.__dict__
+
 
 if __name__ == "__main__":
     # a = Article()
@@ -48,3 +51,8 @@ if __name__ == "__main__":
     # print(a.dump())
     b = Article(json_str)
     print(b.dump())
+    print(b.toDict())
+
+
+
+
