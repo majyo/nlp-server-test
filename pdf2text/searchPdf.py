@@ -82,7 +82,7 @@ class PdfDownloader:
 
         share_path = self._get_path(smb)
         logging.debug(share_path)
-        localfile_path = "../%s/pdfcache/%s.pdf" % (work_dir, i)
+        localfile_path = "cache/%s/pdfcache/%s.pdf" % (work_dir, i)
         localfile = open(localfile_path, "wb")
         self.connection.retrieveFile(share_path[0], share_path[1], localfile)
         logging.info("download pdf file succeed.")

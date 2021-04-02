@@ -1,4 +1,4 @@
-from searchPdf import PdfSearcher
+from pdf2text.searchPdf import PdfSearcher
 import json
 
 
