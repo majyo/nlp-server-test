@@ -54,7 +54,7 @@ class Xml2text:
             head = self.parse_text(parp, "./default:head/text()", ns)
             tag_ps = self.parse_text(parp, "./default:p", ns)
             text_total = self.get_text(tag_ps, ns)
-            body.append((head, text_total))
+            body.append({"heads": head, "texts": text_total})
 
         result_dict["body"] = body
         # write_result(file_writer, "BODY", body)
