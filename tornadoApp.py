@@ -97,7 +97,14 @@ class PDFLabelingHandler(BaseHandler):
         pass
 
     def post(self):
-        pass
+        if self.json_args:
+            smb = json.loads(self.json_args)["smb"]
+            result = self.pdf_labeling_service.pdf_labeling(smb)
+
+            self.set_header("Content-Type", "text/plain")
+            self.write(result)
+            self.flush()
+            self.finish()
 
 
 def make_app():
@@ -131,6 +138,6 @@ def start_labeling_module():
 
 if __name__ == "__main__":
     app = make_app()
-    app.listen(8001)
+    app.listen(8009)
     print("Starting App...")
     tornado.ioloop.IOLoop.current().start()
