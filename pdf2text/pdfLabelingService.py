@@ -6,13 +6,15 @@ import json
 from pdf2text.searchPdf import PdfDownloader
 from pdf2text.pdf2xml import Pdf2xml
 from pdf2text.xml2text import Xml2text
+from nerModule import NER
 
 
 class PdfLabelingService:
-    def __init__(self, downloader: PdfDownloader, pdf2xml: Pdf2xml, xml2text: Xml2text):
+    def __init__(self, downloader: PdfDownloader, pdf2xml: Pdf2xml, xml2text: Xml2text, ner: NER):
         self.downloader: PdfDownloader = downloader
         self.pdf2xml: Pdf2xml = pdf2xml
         self.xml2text: Xml2text = xml2text
+        self.ner: NER = ner
 
     @classmethod
     def create_cache_dir(cls) -> str:
@@ -31,8 +33,15 @@ class PdfLabelingService:
         self.downloader.get_pdf(smb, uuid)
         self.pdf2xml.process(uuid, p2x_workers)
         self.xml2text.parse_xml_dir("cache/%s/xmlcache" % uuid)
+        self.ner_label()
         result = json.dumps(self.xml2text.articles)
 
         self.clear_cache_dir(uuid)
 
         return result
+
+    def ner_label(self) -> None:
+        for article in self.xml2text.articles:
+            # article["abstract"] = self.ner.predicte(article["abstract"])
+            for paragraph in article["body"]:
+                paragraph["texts"] = [self.ner.predicte(sent) for sent in paragraph["texts"]]

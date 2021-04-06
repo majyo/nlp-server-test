@@ -67,7 +67,7 @@ class NerHandler(BaseHandler):
         args_dict: dict = json.loads(self.json_args)
         simple_mode: bool = False if args_dict["mode"] == "full" else True
         text = args_dict["text"]
-        result = self.ner.predicte(text, simple_mode=simple_mode)
+        result = self.ner.predicte(text, simple_mode=simple_mode, return_dict=False)
         return result
 
 
@@ -132,7 +132,7 @@ def start_labeling_module():
     pdf_downloader = PdfDownloader()
     pdf2xml = Pdf2xml("/home/vsphere/Workspace/grobid_client/grobid_client_python/config.json")
     xml2text = Xml2text()
-    labeling_service = PdfLabelingService(pdf_downloader, pdf2xml, xml2text)
+    labeling_service = PdfLabelingService(pdf_downloader, pdf2xml, xml2text, start_ner_module())
     return labeling_service
 
 
