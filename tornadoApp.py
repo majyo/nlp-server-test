@@ -18,6 +18,16 @@ class BaseHandler(tornado.web.RequestHandler):
         self.set_header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS')
         # self.set_header('Access-Control-Max-Age', 1000)
 
+    def prepare(self):
+        if self.request.method == "GET":
+            self.json_args = None
+            return
+
+        if self.request.headers.get("Content-Type", "").startswith("application/json"):
+            self.json_args = self.request.body
+            return
+        self.json_args = None
+
     def options(self):
         pass
 
@@ -32,15 +42,15 @@ class NerHandler(BaseHandler):
     def initialize(self, ner):
         self.ner: NER = ner
 
-    def prepare(self):
-        if self.request.method == "GET":
-            self.json_args = None
-            return
-
-        if self.request.headers.get("Content-Type", "").startswith("application/json"):
-            self.json_args = self.request.body
-            return
-        self.json_args = None
+    # def prepare(self):
+    #     if self.request.method == "GET":
+    #         self.json_args = None
+    #         return
+    #
+    #     if self.request.headers.get("Content-Type", "").startswith("application/json"):
+    #         self.json_args = self.request.body
+    #         return
+    #     self.json_args = None
 
     def get(self):
         self.write("<p>GET request is not supported so far. Please use POST request to access this handler.<p>")
@@ -61,9 +71,41 @@ class NerHandler(BaseHandler):
         return result
 
 
+class PDFSearchHandler(BaseHandler):
+    def initialize(self, search_pdf_service: SearchPdfService):
+        self.search_pdf_service = search_pdf_service
+
+    def get(self):
+        pass
+
+    def post(self):
+        if self.json_args:
+            title = json.loads(self.json_args)["title"]
+            result = self.search_pdf_service.search_pdfs(title)
+
+            self.set_header("Content-Type", "text/plain")
+            self.write(result)
+            self.flush()
+            self.finish()
+
+
+class PDFLabelingHandler(BaseHandler):
+    def initialize(self, pdf_labeling_service: PdfLabelingService):
+        self.pdf_labeling_service = pdf_labeling_service
+
+    def get(self):
+        pass
+
+    def post(self):
+        pass
+
+
 def make_app():
     return tornado.web.Application([
-        (r"/", MainHandler), (r"/api/allennlp/ner", NerHandler, dict(ner=start_ner_module())),
+        (r"/", MainHandler),
+        (r"/api/allennlp/ner", NerHandler, dict(ner=start_ner_module())),
+        (r"/api/pdfSearch", PDFSearchHandler, dict(search_pdf_service=start_search_module())),
+        (r"/api/pdfLabeling", PDFLabelingHandler, dict(pdf_labeling_service=start_labeling_module()))
     ])
 
 

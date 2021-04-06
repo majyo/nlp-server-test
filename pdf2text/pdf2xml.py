@@ -6,7 +6,7 @@ import grobid_client as grobid
 
 class Pdf2xml:
     def __init__(self, config_path):
-        # self.client = grobid.grobid_client(config_path=config_path)
+        self.client = grobid.grobid_client(config_path=config_path)
         pass
 
     def process(self, work_dir, workers):

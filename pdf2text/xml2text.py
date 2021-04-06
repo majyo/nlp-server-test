@@ -1,6 +1,7 @@
 from lxml import etree
 
 import os
+import json
 
 from typing import Optional
 from typing import List
@@ -111,4 +112,4 @@ class Xml2text:
 if __name__ == "__main__":
     xml2text = Xml2text()
     xml2text.parse_xml_dir("./paper_xml")
-    print("good")
+    print("done")

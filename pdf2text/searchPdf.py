@@ -82,7 +82,7 @@ class PdfDownloader:
 
         share_path = self._get_path(smb)
         logging.debug(share_path)
-        localfile_path = "cache/%s/pdfcache/%s.pdf" % (work_dir, i)
+        localfile_path = "cache/%s/pdfcache/0.pdf" % work_dir
         localfile = open(localfile_path, "wb")
         self.connection.retrieveFile(share_path[0], share_path[1], localfile)
         logging.info("download pdf file succeed.")
@@ -96,7 +96,7 @@ class PdfDownloader:
 
 
 if __name__ == "__main__":
-    searcher = PdfSearcher("127.0.0.1", "7001", "searchpdf")
+    searcher = PdfSearcher("192.168.40.10", "8001", "searchpdf")
     searcher.fetch("The properties of graphene", 2)
     for i, article in searcher.articles:
         print(article.dump())

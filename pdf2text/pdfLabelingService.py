@@ -31,6 +31,6 @@ class PdfLabelingService:
         self.pdf2xml.process(uuid, p2x_workers)
         self.xml2text.parse_xml_dir("cache/%s/xmlcache" % uuid)
 
-        self.clear_cache_dir()
+        self.clear_cache_dir(uuid)
 
         return self.xml2text.articles
