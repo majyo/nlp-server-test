@@ -69,9 +69,9 @@ class PdfSearcher:
 class PdfDownloader:
     def __init__(self):
         self.connection = None
-        self.DEFAULT_SMB = "192.168.40.10"
+        self.DEFAULT_SMB = "192.168.40.6"
 
-    def connect_to_smb(self, host, port=445, username="", password=""):
+    def connect_to_smb(self, host, port=445, username="robin", password="smb@123"):
         self.connection = SMBConnection(username, password, "", "", use_ntlm_v2=True)
         result = self.connection.connect(host, port)
         logging.info(result)
@@ -96,7 +96,7 @@ class PdfDownloader:
 
 
 if __name__ == "__main__":
-    searcher = PdfSearcher("192.168.40.10", "8001", "searchpdf")
+    searcher = PdfSearcher("192.168.40.6", "8001", "searchpdf")
     searcher.fetch("The properties of graphene", 2)
     for i, article in searcher.articles:
         print(article.dump())
