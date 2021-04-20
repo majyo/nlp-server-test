@@ -108,8 +108,12 @@ class Xml2text:
 
         return text_list
 
+    def clear_articles(self):
+        self.articles = []
+
 
 if __name__ == "__main__":
     xml2text = Xml2text()
-    xml2text.parse_xml_dir("./paper_xml")
+    xml2text.parse_xml_dir("../cache/test/xmlcache")
+    xml2text.parse_xml_dir("../cache/test/xmlcache")
     print("done")

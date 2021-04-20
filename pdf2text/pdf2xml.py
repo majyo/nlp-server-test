@@ -14,7 +14,10 @@ class Pdf2xml:
         output_dir = "cache/%s/xmlcache" % work_dir
         self.client.process("processFulltextDocument", input_path=input_dir, output=output_dir, n=workers)
 
+    def processTest(self, workers):
+        self.client.process("processFulltextDocument", input_path="../cache/test/pdfcache", output="../cache/test/xmlcache", n=workers)
+
 
 if __name__ == "__main__":
     pdf2xml = Pdf2xml("/home/vsphere/Workspace/grobid_client/grobid_client_python/config.json")
-    pdf2xml.process("test", workers=4)
+    pdf2xml.processTest(workers=4)

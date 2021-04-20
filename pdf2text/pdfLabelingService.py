@@ -36,6 +36,8 @@ class PdfLabelingService:
         self.ner_label()
         result = json.dumps(self.xml2text.articles)
 
+        self.xml2text.clear_articles()
+
         self.clear_cache_dir(uuid)
 
         return result
