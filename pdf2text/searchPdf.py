@@ -95,6 +95,17 @@ class PdfDownloader:
         return share_dir, share_file
 
 
+class UrlPdfDownloader:
+    def get_pdf(self, url: str, work_dir: str):
+        local_path = "cache/%s/pdfcache/0.pdf" % work_dir
+        try:
+            urllib.request.urlretrieve(url, local_path)
+            logging.info("\033[1;47;40m[DOWNLOAD] download pdf %s file succeed.\033[0m" % work_dir)
+        except Exception:
+            logging.info("\033[1;33;40m[DOWNLOAD] download pdf %s file faild.\033[0m" % work_dir)
+            logging.info("\033[1;33;40m[DOWNLOAD] [LOCATION] %s.\033[0m" % url)
+
+
 if __name__ == "__main__":
     searcher = PdfSearcher("192.168.40.6", "8001", "searchpdf")
     searcher.fetch("The properties of graphene", 2)

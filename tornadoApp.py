@@ -1,10 +1,12 @@
 from nerModule import NER
 from pdf2text.searchPdf import PdfSearcher
 from pdf2text.searchPdf import PdfDownloader
+from pdf2text.searchPdf import UrlPdfDownloader
 from pdf2text.pdf2xml import Pdf2xml
 from pdf2text.xml2text import Xml2text
 from pdf2text.searchPdfService import SearchPdfService
 from pdf2text.pdfLabelingService import PdfLabelingService
+from pdf2text.text_classification_service import TextClassificationService
 
 import tornado.web
 import tornado.ioloop
@@ -89,6 +91,24 @@ class PDFSearchHandler(BaseHandler):
             self.finish()
 
 
+class PDFProteinSearchHandler(BaseHandler):
+    def initialize(self, search_pdf_service: SearchPdfService):
+        self.search_pdf_service = search_pdf_service
+
+    def get(self):
+        pass
+
+    def post(self):
+        if self.json_args:
+            title = json.loads(self.json_args)["title"]
+            result = self.search_pdf_service.search_pdfs(title)
+
+            self.set_header("Content-Type", "text/plain")
+            self.write(result)
+            self.flush()
+            self.finish()
+
+
 class PDFLabelingHandler(BaseHandler):
     def initialize(self, pdf_labeling_service: PdfLabelingService):
         self.pdf_labeling_service = pdf_labeling_service
@@ -107,12 +127,32 @@ class PDFLabelingHandler(BaseHandler):
             self.finish()
 
 
+class TextClassificationHandler(BaseHandler):
+    def initialize(self, tcl_service: TextClassificationService):
+        self.tcl_service = tcl_service
+
+    def get(self):
+        pass
+
+    def post(self):
+        if self.json_args:
+            smb = json.loads(self.json_args)["smb"]
+            result = self.tcl_service.pdf_labeling(smb)
+
+            self.set_header("Content-Type", "text/plain")
+            self.write(result)
+            self.flush()
+            self.finish()
+
+
 def make_app():
     return tornado.web.Application([
         (r"/", MainHandler),
         (r"/api/allennlp/ner", NerHandler, dict(ner=start_ner_module())),
         (r"/api/pdfSearch", PDFSearchHandler, dict(search_pdf_service=start_search_module())),
-        (r"/api/pdfLabeling", PDFLabelingHandler, dict(pdf_labeling_service=start_labeling_module()))
+        (r"/api/proteinSearch", PDFProteinSearchHandler, dict(search_pdf_service=start_protein_search_module())),
+        (r"/api/pdfLabeling", PDFLabelingHandler, dict(pdf_labeling_service=start_labeling_module())),
+        (r"/api/textClassification", TextClassificationHandler, dict(pdf_labeling_service=start_text_classification_module()))
     ])
 
 
@@ -128,12 +168,26 @@ def start_search_module():
     return search_service
 
 
+def start_protein_search_module():
+    searcher = PdfSearcher("192.168.40.10", "8001", "biology_searchpdf")
+    search_service = SearchPdfService(searcher)
+    return search_service
+
+
 def start_labeling_module():
     pdf_downloader = PdfDownloader()
     pdf2xml = Pdf2xml("/home/vsphere/Workspace/grobid_client/grobid_client_python/config.json")
     xml2text = Xml2text()
     labeling_service = PdfLabelingService(pdf_downloader, pdf2xml, xml2text, start_ner_module())
     return labeling_service
+
+
+def start_text_classification_module():
+    pdf_downloader = UrlPdfDownloader()
+    pdf2xml = Pdf2xml("/home/vsphere/Workspace/grobid_client/grobid_client_python/config.json")
+    xml2text = Xml2text()
+    text_classification_service = TextClassificationService(pdf_downloader, pdf2xml, xml2text)
+    return text_classification_service
 
 
 if __name__ == "__main__":
