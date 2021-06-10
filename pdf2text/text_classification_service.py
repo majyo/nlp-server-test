@@ -12,6 +12,7 @@ from pdf2text.xml2text import Xml2text
 from nerModule import NER
 
 from typing import Dict
+from typing import List
 
 
 class TextClassificationService:
@@ -57,7 +58,8 @@ class TextClassificationService:
         results = []
         for sentence in sentences:
             data = json.dumps({"sentence": sentence})
-            result = requests.post(url="http://127.0.0.1:8104/api/tcl", data=data)
-            results.append(result)
+            label = requests.post(url="http://127.0.0.1:8104/api/tcl", data=data)
+            label = label.index(max(label))
+            results.append({"sentence": sentence, "label": label})
         return results
 
