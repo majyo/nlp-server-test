@@ -69,7 +69,7 @@ class PdfSearcher:
 class PdfDownloader:
     def __init__(self):
         self.connection = None
-        self.DEFAULT_SMB = "192.168.40.6"
+        self.DEFAULT_SMB = "192.168.40.10"
 
     def connect_to_smb(self, host, port=445, username="robin", password="smb@123"):
         self.connection = SMBConnection(username, password, "", "", use_ntlm_v2=True)

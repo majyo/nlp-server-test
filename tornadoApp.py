@@ -123,7 +123,7 @@ def start_ner_module():
 
 
 def start_search_module():
-    searcher = PdfSearcher("192.168.40.6", "8001", "searchpdf")
+    searcher = PdfSearcher("192.168.40.10", "8001", "searchpdf")
     search_service = SearchPdfService(searcher)
     return search_service
 
